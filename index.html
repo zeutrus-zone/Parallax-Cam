@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parallax Cam</title>
+<link rel="stylesheet" href="css/style.css"></head>
+<body>
+<div id="app">
+ <header id="hdr"><b>Parallax Cam</b><span style="flex:1"></span><button class="ghost pj-new">New</button><button class="ghost pj-open">Open</button><button class="ghost pj-save">Save project</button><button class="ghost do-reset">↺ Reset all</button><button id="exp2">Export video</button></header>
+ <main id="stagebox"><div class="ptitle" id="ptp">Preview</div><canvas id="cv"></canvas></main>
+ <footer id="tport">
+  <div class="ptitle" id="ptt">Timeline</div>
+  <div id="bar"><button id="play" title="Play">▶</button><button id="pause" class="ghost" title="Pause">⏸</button><button id="stop" class="ghost" title="Stop and go back to the start">⏹</button><button id="addk" title="Add keyframes for everything at this time">◆+</button><button id="remk" class="ghost" title="Remove keyframes at this time">◆−</button><button id="ak" class="ghost" title="Auto-keyframe: anything you change is keyed at the current time">●<span class="akw"> Auto</span></button><small id="tl" style="flex:1;text-align:center"></small><button id="exp">Export</button></div>
+  <div id="marks"></div>
+  <input id="tm" type="range" min="0" max="4" step="0.01" value="0" style="width:100%;margin:0">
+  <small id="st"></small>
+  <div id="tlslot"></div>
+ </footer>
+ <div class="sp" id="sp3" title="Drag to resize"></div>
+ <aside id="side">
+  <div class="ptitle" id="pts">Settings</div>
+  <div id="tabs"><button data-t="stage" class="on">Scene</button><button data-t="tml">Timeline</button><button data-t="set">Setup</button></div>
+  <div id="body">
+  <section class="tab" id="t-stage">
+   <div id="tvbox"><div class="ptitle">Camera view (top-down)</div><canvas id="tv"></canvas>
+   <small>Top-down view: camera at the bottom, looking up. Drag the camera or a layer bar to move it. Drag the white dots on the selected bar to resize it. Blue lines = frame edges, orange dot = focus (drag it).</small></div>
+   <div class="row" style="margin-top:10px"><b>Camera and layers</b><button id="newl">+ New layer</button><button class="ghost" id="d3">📷 3D from photo</button></div>
+   <small>Tap one to select it and edit it below. Tap ◆+ above to record the camera, focus and every layer at the current time.</small>
+   <div id="list"></div>
+  </section>
+  <section class="tab" id="t-tml" hidden>
+   <div class="card">
+    <label><span>Length (sec)</span><input id="du" type="number" min="1" max="300" step="0.5" value="4" style="width:90px;flex:none"> <small>seconds (up to 300)</small></label>
+    <label><span>New keys ease</span><select id="de"></select></label>
+    
+    <small>Pick a time with the slider under the preview, arrange your scene, then tap ◆+. Do it again at another time and everything glides between the two. Tap a ◆ on the slider to jump to it. The ◆ next to a single slider keys just that setting. Turn on ● Auto and every change you make is keyed for you.</small>
+   </div>
+   <div id="tlbox"><div class="ptitle">Keyframes</div>
+   <div class="row" style="margin-bottom:6px"><button class="ghost" id="rmk">◆− Remove keys at this time</button><button class="ghost" id="rma">🗑 Remove all keyframes</button></div>
+   <div class="row" style="margin-bottom:6px"><small>Move keys at this time:</small><button class="ghost sh" data-d="-1">−1s</button><button class="ghost sh" data-d="-0.1">−0.1s</button><button class="ghost sh" data-d="0.1">+0.1s</button><button class="ghost sh" data-d="1">+1s</button></div>
+   <div id="kfs" style="margin-top:8px"></div><div id="kfed" class="card" style="margin-top:8px"></div></div>
+  </section>
+  <section class="tab" id="t-set" hidden>
+   <div class="card"><div class="row" id="ars"><b>Frame</b></div><div class="row" id="qs" style="margin-top:8px"><b>Clarity</b></div></div>
+   <small>Clarity is the video resolution. Higher is sharper but slower on a phone.</small>
+   <div class="card" style="margin-top:10px"><div class="row"><b>Project</b><button class="ghost pj-new">New</button><button class="ghost pj-open">Open</button><button class="ghost pj-save">Save</button></div></div>
+   <div class="card" style="margin-top:10px"><div class="row"><button class="ghost do-reset">↺ Reset everything</button></div><small>Puts the camera and every layer’s depth, size, tilt and position back to the start and deletes all keyframes. Your images stay.</small></div>
+   <label style="margin-top:10px"><input type="checkbox" id="outOn"> Show area outside the frame (preview only)</label>
+  </section>
+ </div>
+ </aside>
+ <aside id="rcol"><div id="tvslot"></div></aside>
+ <div class="sp" id="sp1" title="Drag to resize"></div><div class="sp" id="sp2" title="Drag to resize"></div>
+</div>
+<input type="file" id="pjf" accept=".json,application/json" hidden><input type="file" id="d3f" accept="image/*" hidden>
+<div id="camHold" hidden><div class="card" id="camCard">
+    <div class="row"><b>Camera</b><button class="ghost" id="kcam">◆ Keyframe camera</button><button class="ghost" id="rc">↺ Reset camera</button></div>
+    <label><span>Front / back</span><input id="cz" type="range" min="-12" max="29" step="0.01" value="0"></label>
+    <label><span>Left / right</span><input id="cx" type="range" min="-40" max="40" step="0.01" value="0"></label>
+    <label><span>Up / down</span><input id="cy" type="range" min="-40" max="40" step="0.01" value="0"></label>
+    <label><span>Focus distance</span><input id="fd" type="range" min="0.5" max="35" step="0.1" value="10"></label>
+    <label><span>Blur amount</span><input id="ap" type="range" min="0" max="3" step="0.05" value="1"></label>
+    <label><span>Roll (lean sideways)</span><input id="cr" type="range" min="-60" max="60" step="0.1" value="0"></label>
+    <label><span>Tilt (look up/down)</span><input id="ct" type="range" min="-60" max="60" step="0.1" value="0"></label>
+    <label><input type="checkbox" id="bo" checked> Blur on</label>
+    <small>Focus distance is how far from the lens the sharp spot is. It stays fixed when the camera moves, like a real lens.</small>
+</div></div>
+<div id="ov" hidden><div class="card" style="max-width:420px;width:100%"><b>Your video</b><div id="ovb" style="margin-top:6px"></div><button class="ghost" id="ovx" style="margin-top:8px">Close</button></div></div>
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.js"></script>
+<script src="js/app.js"></script>
+</body></html>
